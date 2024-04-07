@@ -8,10 +8,9 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     const showCrafts = async () => {
-        const crafts = await getCrafts();
-        const galleryContainer = document.getElementById("gallery-container");
+        let crafts = await getCrafts();
+        let galleryContainer = document.getElementById("gallery-container");
         galleryContainer.innerHTML = "";
-
         crafts.forEach((craft) => {
             const craftCard = document.createElement("section");
             craftCard.classList.add("gallery-item");
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function() {
             craftCard.appendChild(craftLink);
 
             const craftImage = document.createElement("img");
-            craftImage.src = `/crafts/${craft.image}`;
+            craftImage.src = `/${craft.img}`;
             craftImage.onclick = () => {
                 console.log("Craft clicked:", craft);
                 displayCraftDetails(craft);
@@ -52,11 +51,12 @@ document.addEventListener("DOMContentLoaded", function() {
         editLink.id = "edit-link";
 
         const p = document.createElement("p");
-        p.textContent = craft.description;
         dialogDetails.appendChild(p);
+        p.innerHTML = craft.description;
+        
 
         const img = document.createElement("img");
-        img.src = `/crafts/${craft.image}`;
+        img.src = `/${craft.img}`;
         img.alt = craft.name;
         img.style.maxWidth = "350px";
         img.style.maxHeight = "300px";
@@ -79,13 +79,17 @@ document.addEventListener("DOMContentLoaded", function() {
     };
 
     const populateEditForm = (craft) => {
+        if(craft){
         console.log("populating edit form");
         const form = document.getElementById("add-craft-form");
         form._id.value = craft._id;
         form.name.value = craft.name;
         form.description.value = craft.description;
-        document.getElementById("img-prev").src = craft.img;
+        document.getElementById("img-prev").src = `/${craft.img}`;
         populateSupplies(craft.supplies);
+        } else {
+            console.log("craft is undefined");
+        }
     };
 
     const populateSupplies = (supplies) => {
@@ -133,8 +137,8 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const deleteCraft = async(craft) => {
         let response = await fetch(`/api/crafts/${craft._id}`, {
-            method : "DELETE",
-            headers : {
+            method:"DELETE",
+            headers:{
                 "Content-Type":"application/json;charset=utf-8"
             }
         });
@@ -148,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function() {
         resetForm();
         showCrafts();
         document.getElementById("dialog").style.display = "none";
-    }
+    };
 
     const getSupplies = () => {
         const inputs = document.querySelectorAll("#supply-boxes input");
